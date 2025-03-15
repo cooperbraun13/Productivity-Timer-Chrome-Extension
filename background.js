@@ -1,14 +1,23 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'showNotification') {
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'images/icon128.png',
-        title: message.title,
-        message: message.message,
-        priority: 2
-      });
-    }
+        try {
+            chrome.notifications.create({
+                type: 'basic',
+                iconUrl: 'images/icon128.png',
+                title: message.title || 'Productivity Timer',
+                message: message.message || 'Timer Notification',
+                priority: 2
+            });
+            sendResponse({success: true});
+          } catch (error) {
+            console.error('Notification error:', error);
+            sendResponse({success: false, error: error.message});
+          }
+        }
+        return true;
   });
+
+  console.log('Productivity Timer background service has started');
   
   // Handle alarm for timer completion
   chrome.alarms.onAlarm.addListener((alarm) => {
